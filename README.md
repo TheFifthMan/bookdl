@@ -1,2 +1,3 @@
 # An tiny script to scrawl bookdl's book
-www.bookdl.com is popular website for it books. 
+爬取了[bookdl](www.bookdl.com)将近一万本的书籍。
+
