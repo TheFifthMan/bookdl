@@ -6,6 +6,7 @@ import re
 import threading 
 from urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
+from datetime import datetime 
 
 # global variable 
 # url = "https://bookdl.com/page/"
@@ -26,7 +27,6 @@ def get_pages(cssselector):
     return last.group(1) 
 
 def request_all_links():
-    download = []
     for num in range(1,int(last)):        
         url = "https://bookdl.com/page/"+str(num)
         print('正在收集每一页的url:{}'.format(url))
@@ -37,14 +37,14 @@ def request_all_links():
             a = post.find('a')
             title = a['title']
             link = a['href']
-            download.append(link)
+            Q.put(link)
             
-    
-    return download
+   
 
-def request_download_url(download):
-    for url in download:
-        print('正在取得每一本书籍的下载链接：{}'.format(url))
+def request_download_url():
+    while not Q.empty():
+        url = Q.get()
+        print('下载链接：{} - {}'.format(url,datetime.now()))
         res = session.get(url,headers=headers)
         sourp = BeautifulSoup(res.text,'html.parser')
         div = sourp.find('div',class_='book-download')
@@ -57,4 +57,10 @@ def request_download_url(download):
 if __name__ == "__main__":
     last = get_pages(last_page_pattern)
     download = request_all_links()
-    request_download_url(download)
+    # request_download_url(download)
+    ts = [threading.Thread(target=request_download_url) for i in range(100)]
+    for t in ts:
+        t.start()
+    for t in ts:
+        t.join()
+
