@@ -7,6 +7,8 @@ import threading
 from urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 from datetime import datetime 
+now = datetime.now()
+timestamp = str(now.year)+str(now.month)+str(now.day)+str(now.hour)+str(now.minute)+str(now.second)
 
 # global variable 
 # url = "https://bookdl.com/page/"
@@ -51,7 +53,7 @@ def request_download_url():
         links = div.find_all('a')
         for link in links:
             print(link['href'])
-            with open('download_url2.txt','a')as f:
+            with open(timestamp+'.txt','a')as f:
                 f.write(link['href']+'\n')
     
 if __name__ == "__main__":
